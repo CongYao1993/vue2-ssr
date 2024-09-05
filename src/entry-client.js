@@ -5,7 +5,16 @@ const { app, router, store } = createApp();
 
 // 在挂载到应用程序之前，store 就应该获取到状态，设置 store.state
 if (window.__INITIAL_STATE__) {
-  store.replaceState(window.__INITIAL_STATE__);
+  // store.replaceState(window.__INITIAL_STATE__);
+  Object.keys(window.__INITIAL_STATE__).forEach((key) => {
+    if (key === "route") {
+      return;
+    }
+    store.registerModule(key, {
+      namespaced: true,
+      state: window.__INITIAL_STATE__[key],
+    });
+  });
 }
 
 router.onReady(() => {
@@ -46,8 +55,7 @@ router.onReady(() => {
   app.$mount("#app");
 });
 
-// 在首屏渲染后，如果首屏不包含异步请求的vuex数据，在后续跳转其他页面时将会无法获得这些vuex，所以客户端在挂载到应用程序之前，store也应该获取到状态：
-// a global mixin that calls `asyncData` when a route component's params change
+// 当组件的参数改变时触发
 Vue.mixin({
   beforeRouteUpdate(to, from, next) {
     const { asyncData } = this.$options;

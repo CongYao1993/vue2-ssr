@@ -1,5 +1,5 @@
 <template>
-  <div @click="clickTitle">{{ item?.title }}</div>
+  <div class="title" @click="clickTitle">{{ item?.title }}</div>
 </template>
 
 <script>
@@ -8,6 +8,7 @@ import { createNamespacedHelpers } from "vuex";
 const { mapState } = createNamespacedHelpers("homeStore");
 
 export default {
+  name: "Home",
   asyncData({ store, route }) {
     store.registerModule("homeStore", homeStoreModule);
     // 触发 action 后，会返回 Promise
@@ -18,6 +19,9 @@ export default {
     this.$store.unregisterModule("homeStore");
   },
   computed: {
+    // item() {
+    //     return this.$store.state.homeStore.item;
+    //   },
     ...mapState(["item"]),
   },
   methods: {
@@ -27,3 +31,9 @@ export default {
   },
 };
 </script>
+
+<style scope lang="less">
+.title {
+  background-color: aqua;
+}
+</style>

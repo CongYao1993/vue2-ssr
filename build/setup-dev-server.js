@@ -10,7 +10,9 @@ const serverConfig = require("./webpack.server.config");
 const readFile = (fs, file) => {
   try {
     return fs.readFileSync(path.join(clientConfig.output.path, file), "utf-8");
-  } catch (e) {}
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 module.exports = function setupDevServer(app, templatePath, cb) {
@@ -34,7 +36,6 @@ module.exports = function setupDevServer(app, templatePath, cb) {
 
   // 读取 `index.template.html` 模版文件
   template = fs.readFileSync(templatePath, "utf-8");
-  // watch 模版文件是否更新
   chokidar.watch(templatePath).on("change", () => {
     template = fs.readFileSync(templatePath, "utf-8");
     console.log("index.html template updated.");
@@ -64,7 +65,7 @@ module.exports = function setupDevServer(app, templatePath, cb) {
   });
 
   // https://github.com/webpack-contrib/webpack-hot-middleware
-  app.use(require("webpack-hot-middleware")(clientCompiler, { heartbeat: 5000 }));
+  app.use(require("webpack-hot-middleware")(clientCompiler, { heartbeat: 5000, log: false }));
 
   // watch and update server renderer
   const serverCompiler = webpack(serverConfig);

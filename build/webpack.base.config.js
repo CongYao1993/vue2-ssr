@@ -3,22 +3,44 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin"); // 分离 CSS �
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin"); // 压缩 CSS
 const { VueLoaderPlugin } = require("vue-loader");
 
-const isProd = process.env.NODE_ENV === "production";
+const NODE_ENV = process.env.NODE_ENV;
+const isProd = NODE_ENV === "production";
+
+const styleLoader = isProd ? MiniCssExtractPlugin.loader : "vue-style-loader";
 
 module.exports = {
-  mode: isProd ? "production" : "development",
-  devtool: isProd ? false : "cheap-module-source-map",
+  mode: NODE_ENV || "development",
   output: {
     path: path.resolve(__dirname, "../dist"),
-    publicPath: "../dist/",
-    filename: "[name].[chunkhash].js",
-    clean: true, // 自动将上次打包目录资源清空，webpack5.20.0+
+    publicPath: "/dist/",
+    filename: isProd ? "js/[name].[contenthash:6].bundle.js" : "js/[name].bundle.js",
+    chunkFilename: isProd ? "js/chunk_[name]_[contenthash:6].js" : "js/chunk_[name].js",
   },
   resolve: {
+    extensions: [".js", ".vue", ".json", ".ts", ".html"],
     alias: {
-      public: path.resolve(__dirname, "../public"),
+      "@": path.resolve(__dirname, "../src"),
     },
   },
+  optimization: {
+    splitChunks: { chunks: "all" },
+    runtimeChunk: { name: "runtime" },
+    minimizer: isProd
+      ? [
+          // 在 webpack@5 中，可以使用 `...` 语法来扩展现有的 minimizer（包括 `terser-webpack-plugin`）
+          `...`,
+          new CssMinimizerPlugin(),
+        ]
+      : [],
+  },
+  plugins: isProd
+    ? [
+        new MiniCssExtractPlugin({
+          filename: "styles/[name].[contenthash:6].css",
+        }),
+        new VueLoaderPlugin(),
+      ]
+    : [new VueLoaderPlugin()],
   module: {
     rules: [
       {
@@ -33,7 +55,7 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        use: [isProd ? MiniCssExtractPlugin.loader : "vue-style-loader", "css-loader", "less-loader"],
+        use: [styleLoader, "css-loader", "less-loader"],
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
@@ -54,21 +76,4 @@ module.exports = {
       },
     ],
   },
-  optimization: {
-    minimizer: isProd
-      ? [
-          // 在 webpack@5 中，可以使用 `...` 语法来扩展现有的 minimizer（包括 `terser-webpack-plugin`）
-          `...`,
-          new CssMinimizerPlugin(),
-        ]
-      : [],
-  },
-  plugins: isProd
-    ? [
-        new MiniCssExtractPlugin({
-          filename: "common.[chunkhash].css",
-        }),
-        new VueLoaderPlugin(),
-      ]
-    : [new VueLoaderPlugin()],
 };

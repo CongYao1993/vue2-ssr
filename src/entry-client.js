@@ -5,16 +5,16 @@ const { app, router, store } = createApp();
 
 // 在挂载到应用程序之前，store 就应该获取到状态，设置 store.state
 if (window.__INITIAL_STATE__) {
-  // store.replaceState(window.__INITIAL_STATE__);
-  Object.keys(window.__INITIAL_STATE__).forEach((key) => {
-    if (key === "route") {
-      return;
-    }
-    store.registerModule(key, {
-      namespaced: true,
-      state: window.__INITIAL_STATE__[key],
-    });
-  });
+  store.replaceState(window.__INITIAL_STATE__);
+  // Object.keys(window.__INITIAL_STATE__).forEach((key) => {
+  //   if (key === "route") {
+  //     return;
+  //   }
+  //   store.registerModule(key, {
+  //     namespaced: true,
+  //     state: window.__INITIAL_STATE__[key],
+  //   });
+  // });
 }
 
 router.onReady(() => {

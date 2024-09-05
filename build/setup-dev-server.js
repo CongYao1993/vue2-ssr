@@ -43,7 +43,8 @@ module.exports = function setupDevServer(app, templatePath, cb) {
   });
 
   // 给 client 配置增加热更新中间件
-  clientConfig.entry.app = ["webpack-hot-middleware/client", clientConfig.entry.app];
+  // https://github.com/webpack/webpack/issues/12408
+  clientConfig.entry.app = ["webpack-hot-middleware/client?reload=true", clientConfig.entry.app];
   clientConfig.output.filename = "[name].js";
   clientConfig.plugins.push(new webpack.HotModuleReplacementPlugin(), new webpack.NoEmitOnErrorsPlugin());
 

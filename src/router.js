@@ -10,7 +10,7 @@ export function createRouter() {
     // 使用异步组件
     routes: [
       { path: "/", component: () => import("./views/home/index.vue") },
-      { path: "/article", component: () => import("./views/article/index.vue") },
+      { path: "/article/:id", component: () => import("./views/article/index.vue") },
     ],
   });
 }

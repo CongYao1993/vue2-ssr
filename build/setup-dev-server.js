@@ -6,7 +6,7 @@ const chokidar = require("chokidar");
 const clientConfig = require("./webpack.client.config");
 const serverConfig = require("./webpack.server.config");
 
-// 读取 dist 文件夹的指定文件内容
+// 读取 dist 文件夹的指定文件 file 的内容
 const readFile = (fs, file) => {
   try {
     return fs.readFileSync(path.join(clientConfig.output.path, file), "utf-8");
@@ -73,6 +73,7 @@ module.exports = function setupDevServer(app, templatePath, cb) {
   serverCompiler.hooks.done.tap("done", (stats) => {
     console.log("serverCompiler success");
   });
+  // 从内存中读取文件
   const mfs = new MFS();
   serverCompiler.outputFileSystem = mfs;
   serverCompiler.watch({}, (err, stats) => {

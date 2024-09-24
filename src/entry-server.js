@@ -8,7 +8,8 @@ export default (context) => {
     // 设置服务器端 router 的位置
     router.push(context.url);
 
-    // 等到 router 将可能的异步组件和钩子函数解析完
+    // 在路由器完成初始导航之后被解析，这时所有和初始路由有关联的异步入口钩子函数和异步组件都已经被解析
+    // 仅在首次加载页面时被调用，之后切换路由不会再调用
     router.onReady(() => {
       const matchedComponents = router.getMatchedComponents();
       // 匹配不到的路由，执行 reject 函数，并返回 404
